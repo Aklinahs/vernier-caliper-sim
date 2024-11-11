@@ -1,43 +1,37 @@
-// src/components/common/Header/Header.tsx
-import React from "react";
-import { Menu } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const Header: React.FC = () => {
+const Header = () => {
   return (
     <header className="bg-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo/Brand */}
-          <div className="flex items-center">
-            <h1 className="text-xl font-bold text-gray-800">
-              Vernier Caliper Sim
-            </h1>
-          </div>
-
-          {/* Navigation - Desktop */}
-          <nav className="hidden md:flex space-x-8">
-            <a href="#" className="text-gray-600 hover:text-gray-900">
-              Home
-            </a>
-            <a href="#" className="text-gray-600 hover:text-gray-900">
-              Simulator
-            </a>
-            <a href="#" className="text-gray-600 hover:text-gray-900">
-              Guide
-            </a>
-            <a href="#" className="text-gray-600 hover:text-gray-900">
-              About
-            </a>
-          </nav>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <button className="p-2">
-              <Menu className="h-6 w-6 text-gray-600" />
-            </button>
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="flex justify-between items-center">
+          <Link to="/" className="text-xl font-bold text-gray-800">
+            Vernier Caliper Sim
+          </Link>
+          <div className="hidden sm:block">
+            <div className="flex space-x-4">
+              <Link
+                to="/simulator"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2"
+              >
+                Simulator
+              </Link>
+              <Link
+                to="/practice"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2"
+              >
+                Practice
+              </Link>
+              <Link
+                to="/about"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2"
+              >
+                About
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </nav>
     </header>
   );
 };

@@ -1,8 +1,12 @@
-// src/App.tsx
-import MaintenancePage from "./features/maintenance/components/MaintenancePage";
+import { HashRouter } from "react-router-dom";
+import AppRoutes from "./routes/AppRoutes";
 
 function App() {
-  return <MaintenancePage />;
+  return (
+    <HashRouter>
+      <AppRoutes />
+    </HashRouter>
+  );
 }
 
 export default App;
