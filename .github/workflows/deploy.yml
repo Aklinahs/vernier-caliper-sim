@@ -3,7 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main
+      - master # Changed from 'main' to 'master' since you're using master branch
+
+permissions:
+  contents: write # Required for pushing to gh-pages branch
 
 jobs:
   deploy:
