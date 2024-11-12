@@ -16,6 +16,11 @@ const CaliperDisplay = ({
   });
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
+  const [imageStatus, setImageStatus] = useState({
+    base: false,
+    mainScale: false,
+    vernierScale: false,
+  });
 
   // Mouse event handlers
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -62,39 +67,93 @@ const CaliperDisplay = ({
 
   // Function to get correct image path
   const getImagePath = (path: string) => {
-    const baseUrl = import.meta.env.DEV ? "" : "/vernier-caliper-sim";
-    return `${baseUrl}${path}`;
+    return import.meta.env.DEV
+      ? `assets/caliper/${path}`
+      : `/vernier-caliper-sim/assets/caliper/${path}`;
   };
 
+  // Log when component mounts
+  useEffect(() => {
+    console.log("Environment:", import.meta.env.MODE);
+    console.log("Base URL:", import.meta.env.BASE_URL);
+    console.log("Image paths:");
+    console.log("- Base:", getImagePath("base/jaw-base.png"));
+    console.log(
+      "- Main Scale:",
+      getImagePath(`main-scale/ms-${settings.mainScaleLength}.png`)
+    );
+    console.log(
+      "- Vernier Scale:",
+      getImagePath(
+        `vernier-scale/vs-${settings.mainScaleLength}/vs-${settings.mainScaleLength}-${settings.vernierDivisions}.png`
+      )
+    );
+  }, [settings]);
+
   return (
-    <div
-      className="relative w-full h-64 bg-white rounded-lg shadow-md overflow-hidden select-none cursor-grab active:cursor-grabbing"
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-    >
-      <img
-        src={getImagePath("assets/caliper/base/jaw-base.png")}
-        alt="Caliper base"
-        className="absolute top-0 left-0 pointer-events-none"
-      />
-      <img
-        src={getImagePath(
-          `assets/caliper/main-scale/ms-${settings.mainScaleLength}.png`
-        )}
-        alt="Main scale"
-        className="absolute top-0 left-0 pointer-events-none"
-        style={{
-          transform: `translateX(${position.mainScale}px)`,
-        }}
-      />
-      <img
-        src={getImagePath(
-          `assets/caliper/vernier-scale/vs-${settings.mainScaleLength}/vs-${settings.mainScaleLength}-${settings.vernierDivisions}.png`
-        )}
-        alt="Vernier scale"
-        className="absolute top-0 left-0 pointer-events-none"
-      />
+    <div className="relative w-full h-64 bg-white rounded-lg shadow-md overflow-hidden">
+      {/* Debug information */}
+      <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 text-xs z-50">
+        <div>Image Loading Status:</div>
+        <div>Base: {imageStatus.base ? "✅" : "❌"}</div>
+        <div>Main Scale: {imageStatus.mainScale ? "✅" : "❌"}</div>
+        <div>Vernier Scale: {imageStatus.vernierScale ? "✅" : "❌"}</div>
+        <div className="mt-2">Current Paths:</div>
+        <div className="text-[8px]">{getImagePath("base/jaw-base.png")}</div>
+      </div>
+
+      <div
+        className="relative w-full h-full cursor-grab active:cursor-grabbing"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+        <img
+          src={getImagePath("base/jaw-base.png")}
+          alt="Caliper base"
+          className="absolute top-0 left-0 pointer-events-none"
+          onLoad={() => setImageStatus((prev) => ({ ...prev, base: true }))}
+          onError={(e) => {
+            console.error("Failed to load base image:", e.currentTarget.src);
+            setImageStatus((prev) => ({ ...prev, base: false }));
+          }}
+        />
+        <img
+          src={getImagePath(`main-scale/ms-${settings.mainScaleLength}.png`)}
+          alt="Main scale"
+          className="absolute top-0 left-0 pointer-events-none"
+          style={{
+            transform: `translateX(${position.mainScale}px)`,
+          }}
+          onLoad={() =>
+            setImageStatus((prev) => ({ ...prev, mainScale: true }))
+          }
+          onError={(e) => {
+            console.error(
+              "Failed to load main scale image:",
+              e.currentTarget.src
+            );
+            setImageStatus((prev) => ({ ...prev, mainScale: false }));
+          }}
+        />
+        <img
+          src={getImagePath(
+            `vernier-scale/vs-${settings.mainScaleLength}/vs-${settings.mainScaleLength}-${settings.vernierDivisions}.png`
+          )}
+          alt="Vernier scale"
+          className="absolute top-0 left-0 pointer-events-none"
+          onLoad={() =>
+            setImageStatus((prev) => ({ ...prev, vernierScale: true }))
+          }
+          onError={(e) => {
+            console.error(
+              "Failed to load vernier scale image:",
+              e.currentTarget.src
+            );
+            setImageStatus((prev) => ({ ...prev, vernierScale: false }));
+          }}
+        />
+      </div>
     </div>
   );
 };
