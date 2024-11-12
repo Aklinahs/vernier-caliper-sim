@@ -1,5 +1,3 @@
-// src/features/simulator/components/SimulatorPage.tsx
-
 import { useState } from "react";
 import UnderConstruction from "../../../components/common/UnderConstruction/UnderConstruction";
 import { Ruler } from "lucide-react";

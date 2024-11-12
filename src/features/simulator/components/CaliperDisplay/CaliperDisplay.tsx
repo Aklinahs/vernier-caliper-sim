@@ -17,15 +17,14 @@ const CaliperDisplay = ({
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
 
-  // Handle mouse down event
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  // Mouse event handlers
+  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     setIsDragging(true);
     setStartX(e.clientX);
   }, []);
 
-  // Handle mouse move event
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.MouseEvent<HTMLDivElement>) => {
       if (!isDragging) return;
 
       const deltaX = e.clientX - startX;
@@ -41,19 +40,15 @@ const CaliperDisplay = ({
 
       setPosition(newPosition);
       setStartX(e.clientX);
-
-      // Notify parent component about position change
       onPositionChange?.(newPosition);
     },
     [isDragging, startX, position, settings, onPositionChange]
   );
 
-  // Handle mouse up event
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
   }, []);
 
-  // Add and remove window-level event listeners
   useEffect(() => {
     const handleGlobalMouseUp = () => {
       setIsDragging(false);
@@ -65,6 +60,12 @@ const CaliperDisplay = ({
     };
   }, []);
 
+  // Function to get correct image path
+  const getImagePath = (path: string) => {
+    const baseUrl = import.meta.env.DEV ? "" : "/vernier-caliper-sim";
+    return `${baseUrl}${path}`;
+  };
+
   return (
     <div
       className="relative w-full h-64 bg-white rounded-lg shadow-md overflow-hidden select-none cursor-grab active:cursor-grabbing"
@@ -73,12 +74,14 @@ const CaliperDisplay = ({
       onMouseUp={handleMouseUp}
     >
       <img
-        src="src/assets/caliper/base/jaw-base.png"
+        src={getImagePath("assets/caliper/base/jaw-base.png")}
         alt="Caliper base"
         className="absolute top-0 left-0 pointer-events-none"
       />
       <img
-        src={`src/assets/caliper/main-scale/ms-${settings.mainScaleLength}.png`}
+        src={getImagePath(
+          `assets/caliper/main-scale/ms-${settings.mainScaleLength}.png`
+        )}
         alt="Main scale"
         className="absolute top-0 left-0 pointer-events-none"
         style={{
@@ -86,7 +89,9 @@ const CaliperDisplay = ({
         }}
       />
       <img
-        src={`src/assets/caliper/vernier-scale/vs-${settings.mainScaleLength}/vs-${settings.mainScaleLength}-${settings.vernierDivisions}.png`}
+        src={getImagePath(
+          `assets/caliper/vernier-scale/vs-${settings.mainScaleLength}/vs-${settings.mainScaleLength}-${settings.vernierDivisions}.png`
+        )}
         alt="Vernier scale"
         className="absolute top-0 left-0 pointer-events-none"
       />
