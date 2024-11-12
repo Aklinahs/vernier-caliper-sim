@@ -1,7 +1,8 @@
 import { useState } from "react";
-import UnderConstruction from "../../../components/common/UnderConstruction/UnderConstruction";
 import { Ruler } from "lucide-react";
+import UnderConstruction from "../../../components/common/UnderConstruction/UnderConstruction";
 import CaliperDisplay from "./CaliperDisplay/CaliperDisplay";
+import VernierControl from "./VernierControl/VernierControl";
 import { CaliperSettings, CaliperPosition } from "../types/simulator.types";
 
 const SimulatorPage = () => {
@@ -12,6 +13,10 @@ const SimulatorPage = () => {
     units: "mm",
     zeroError: 0,
   });
+
+  // Define the pixel movement range for vernier scale
+  const VERNIER_MOVEMENT_RANGE = 672; // Adjust this value based on your image size
+  const [vernierPosition, setVernierPosition] = useState(0);
 
   const handlePositionChange = (position: CaliperPosition) => {
     console.log("Position changed:", position);
@@ -28,7 +33,14 @@ const SimulatorPage = () => {
       <div className="mt-8 max-w-4xl mx-auto">
         <CaliperDisplay
           settings={settings}
+          vernierPosition={vernierPosition}
           onPositionChange={handlePositionChange}
+        />
+        <VernierControl
+          value={vernierPosition}
+          maxValue={settings.mainScaleLength}
+          movementRange={VERNIER_MOVEMENT_RANGE}
+          onChange={setVernierPosition}
         />
       </div>
     </div>

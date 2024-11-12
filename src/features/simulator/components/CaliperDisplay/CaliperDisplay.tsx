@@ -1,69 +1,22 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { CaliperSettings, CaliperPosition } from "../../types/simulator.types";
 
 interface CaliperDisplayProps {
   settings: CaliperSettings;
+  vernierPosition: number; // New prop for vernier position
   onPositionChange?: (position: CaliperPosition) => void;
 }
 
 const CaliperDisplay = ({
   settings,
+  vernierPosition,
   onPositionChange,
 }: CaliperDisplayProps) => {
-  const [position, setPosition] = useState<CaliperPosition>({
-    mainScale: 0,
-    vernierScale: 0,
-  });
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
   const [imageStatus, setImageStatus] = useState({
     base: false,
     mainScale: false,
     vernierScale: false,
   });
-
-  // Mouse event handlers
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    setIsDragging(true);
-    setStartX(e.clientX);
-  }, []);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!isDragging) return;
-
-      const deltaX = e.clientX - startX;
-      const newMainScale = Math.max(
-        0,
-        Math.min(position.mainScale + deltaX * 0.1, settings.mainScaleLength)
-      );
-
-      const newPosition = {
-        mainScale: newMainScale,
-        vernierScale: newMainScale % settings.mainScaleDivision,
-      };
-
-      setPosition(newPosition);
-      setStartX(e.clientX);
-      onPositionChange?.(newPosition);
-    },
-    [isDragging, startX, position, settings, onPositionChange]
-  );
-
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  useEffect(() => {
-    const handleGlobalMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    window.addEventListener("mouseup", handleGlobalMouseUp);
-    return () => {
-      window.removeEventListener("mouseup", handleGlobalMouseUp);
-    };
-  }, []);
 
   // Function to get correct image path
   const getImagePath = (path: string) => {
@@ -72,23 +25,13 @@ const CaliperDisplay = ({
       : `/vernier-caliper-sim/assets/caliper/${path}`;
   };
 
-  // Log when component mounts
   useEffect(() => {
-    console.log("Environment:", import.meta.env.MODE);
-    console.log("Base URL:", import.meta.env.BASE_URL);
-    console.log("Image paths:");
-    console.log("- Base:", getImagePath("base/jaw-base.png"));
-    console.log(
-      "- Main Scale:",
-      getImagePath(`main-scale/ms-${settings.mainScaleLength}.png`)
-    );
-    console.log(
-      "- Vernier Scale:",
-      getImagePath(
-        `vernier-scale/vs-${settings.mainScaleLength}/vs-${settings.mainScaleLength}-${settings.vernierDivisions}.png`
-      )
-    );
-  }, [settings]);
+    const position = {
+      mainScale: 0, // Main scale is now fixed
+      vernierScale: vernierPosition,
+    };
+    onPositionChange?.(position);
+  }, [vernierPosition, onPositionChange]);
 
   return (
     <div className="relative w-full h-64 bg-white rounded-lg shadow-md overflow-hidden">
@@ -102,16 +45,11 @@ const CaliperDisplay = ({
         <div className="text-[8px]">{getImagePath("base/jaw-base.png")}</div>
       </div>
 
-      <div
-        className="relative w-full h-full cursor-grab active:cursor-grabbing"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      >
+      <div className="relative w-full h-full">
         <img
           src={getImagePath("base/jaw-base.png")}
           alt="Caliper base"
-          className="absolute top-0 left-0 pointer-events-none"
+          className="absolute top-0 left-0"
           onLoad={() => setImageStatus((prev) => ({ ...prev, base: true }))}
           onError={(e) => {
             console.error("Failed to load base image:", e.currentTarget.src);
@@ -121,10 +59,7 @@ const CaliperDisplay = ({
         <img
           src={getImagePath(`main-scale/ms-${settings.mainScaleLength}.png`)}
           alt="Main scale"
-          className="absolute top-0 left-0 pointer-events-none"
-          style={{
-            transform: `translateX(${position.mainScale}px)`,
-          }}
+          className="absolute top-0 left-0"
           onLoad={() =>
             setImageStatus((prev) => ({ ...prev, mainScale: true }))
           }
@@ -141,7 +76,11 @@ const CaliperDisplay = ({
             `vernier-scale/vs-${settings.mainScaleLength}/vs-${settings.mainScaleLength}-${settings.vernierDivisions}.png`
           )}
           alt="Vernier scale"
-          className="absolute top-0 left-0 pointer-events-none"
+          className="absolute top-0 left-0"
+          style={{
+            transform: `translateX(${vernierPosition}px)`,
+            transition: "transform 0.1s ease-out", // Optional: adds smooth movement
+          }}
           onLoad={() =>
             setImageStatus((prev) => ({ ...prev, vernierScale: true }))
           }
