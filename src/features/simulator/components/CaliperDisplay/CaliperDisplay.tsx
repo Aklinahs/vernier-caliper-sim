@@ -1,16 +1,20 @@
+// src/features/simulator/components/CaliperDisplay/CaliperDisplay.tsx
+
 import { useState, useEffect } from "react";
 import { CaliperSettings, CaliperPosition } from "../../types/simulator.types";
 
 interface CaliperDisplayProps {
   settings: CaliperSettings;
-  vernierPosition: number; // New prop for vernier position
+  vernierPosition: number; // This will now be a percentage (0-100)
   onPositionChange?: (position: CaliperPosition) => void;
+  pixelRatio: number;
 }
 
 const CaliperDisplay = ({
   settings,
   vernierPosition,
   onPositionChange,
+  pixelRatio,
 }: CaliperDisplayProps) => {
   const [imageStatus, setImageStatus] = useState({
     base: false,
@@ -18,7 +22,6 @@ const CaliperDisplay = ({
     vernierScale: false,
   });
 
-  // Function to get correct image path
   const getImagePath = (path: string) => {
     return import.meta.env.DEV
       ? `assets/caliper/${path}`
@@ -27,11 +30,11 @@ const CaliperDisplay = ({
 
   useEffect(() => {
     const position = {
-      mainScale: 0, // Main scale is now fixed
-      vernierScale: vernierPosition,
+      mainScale: 0,
+      vernierScale: (vernierPosition / 100) * settings.mainScaleLength, // Convert percentage to mm
     };
     onPositionChange?.(position);
-  }, [vernierPosition, onPositionChange]);
+  }, [vernierPosition, onPositionChange, settings.mainScaleLength]);
 
   return (
     <div className="relative w-full h-64 bg-white rounded-lg shadow-md overflow-hidden">
@@ -41,15 +44,14 @@ const CaliperDisplay = ({
         <div>Base: {imageStatus.base ? "✅" : "❌"}</div>
         <div>Main Scale: {imageStatus.mainScale ? "✅" : "❌"}</div>
         <div>Vernier Scale: {imageStatus.vernierScale ? "✅" : "❌"}</div>
-        <div className="mt-2">Current Paths:</div>
-        <div className="text-[8px]">{getImagePath("base/jaw-base.png")}</div>
+        <div>Position: {vernierPosition.toFixed(1)}%</div>
       </div>
 
       <div className="relative w-full h-full">
         <img
           src={getImagePath("base/jaw-base.png")}
           alt="Caliper base"
-          className="absolute top-0 left-0"
+          className="absolute top-0 left-0 w-full h-auto"
           onLoad={() => setImageStatus((prev) => ({ ...prev, base: true }))}
           onError={(e) => {
             console.error("Failed to load base image:", e.currentTarget.src);
@@ -59,7 +61,7 @@ const CaliperDisplay = ({
         <img
           src={getImagePath(`main-scale/ms-${settings.mainScaleLength}.png`)}
           alt="Main scale"
-          className="absolute top-0 left-0"
+          className="absolute top-0 left-0 w-full h-auto"
           onLoad={() =>
             setImageStatus((prev) => ({ ...prev, mainScale: true }))
           }
@@ -71,27 +73,37 @@ const CaliperDisplay = ({
             setImageStatus((prev) => ({ ...prev, mainScale: false }));
           }}
         />
-        <img
-          src={getImagePath(
-            `vernier-scale/vs-${settings.mainScaleLength}/vs-${settings.mainScaleLength}-${settings.vernierDivisions}.png`
-          )}
-          alt="Vernier scale"
-          className="absolute top-0 left-0"
+        <div
+          className="absolute top-0 left-0 w-full h-full"
           style={{
-            transform: `translateX(${vernierPosition}px)`,
-            transition: "transform 0.1s ease-out", // Optional: adds smooth movement
+            position: "relative",
+            overflow: "hidden",
           }}
-          onLoad={() =>
-            setImageStatus((prev) => ({ ...prev, vernierScale: true }))
-          }
-          onError={(e) => {
-            console.error(
-              "Failed to load vernier scale image:",
-              e.currentTarget.src
-            );
-            setImageStatus((prev) => ({ ...prev, vernierScale: false }));
-          }}
-        />
+        >
+          <img
+            src={getImagePath(
+              `vernier-scale/vs-${settings.mainScaleLength}/vs-${settings.mainScaleLength}-${settings.vernierDivisions}.png`
+            )}
+            alt="Vernier scale"
+            className="absolute top-0 h-auto"
+            style={{
+              width: "100%",
+              left: `${vernierPosition}%`,
+              transform: "translateX(-${vernierPosition}%)",
+              transition: "left 0.1s ease-out",
+            }}
+            onLoad={() =>
+              setImageStatus((prev) => ({ ...prev, vernierScale: true }))
+            }
+            onError={(e) => {
+              console.error(
+                "Failed to load vernier scale image:",
+                e.currentTarget.src
+              );
+              setImageStatus((prev) => ({ ...prev, vernierScale: false }));
+            }}
+          />
+        </div>
       </div>
     </div>
   );

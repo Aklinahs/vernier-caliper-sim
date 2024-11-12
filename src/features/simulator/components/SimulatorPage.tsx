@@ -8,6 +8,9 @@ import VernierControl from "./VernierControl/VernierControl";
 import SettingsPanel from "./SettingsPanel/SettingsPanel";
 import { CaliperSettings, CaliperPosition } from "../types/simulator.types";
 
+const MOVEMENT_RANGE = 75; // Using percentage (0-100)
+const PIXEL_RATIO = 1;
+
 const SimulatorPage = () => {
   const [settings, setSettings] = useState<CaliperSettings>({
     mainScaleLength: 100,
@@ -18,7 +21,6 @@ const SimulatorPage = () => {
   });
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const VERNIER_MOVEMENT_RANGE = 300;
   const [vernierPosition, setVernierPosition] = useState(0);
 
   const handlePositionChange = (position: CaliperPosition) => {
@@ -27,7 +29,6 @@ const SimulatorPage = () => {
 
   const handleSettingsChange = (newSettings: CaliperSettings) => {
     setSettings(newSettings);
-    // Reset vernier position when settings change
     setVernierPosition(0);
   };
 
@@ -44,11 +45,12 @@ const SimulatorPage = () => {
           settings={settings}
           vernierPosition={vernierPosition}
           onPositionChange={handlePositionChange}
+          pixelRatio={PIXEL_RATIO}
         />
         <VernierControl
           value={vernierPosition}
           maxValue={settings.mainScaleLength}
-          movementRange={VERNIER_MOVEMENT_RANGE}
+          movementRange={MOVEMENT_RANGE} // Now using percentage
           onChange={setVernierPosition}
         />
         <SettingsPanel
