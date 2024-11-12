@@ -7,14 +7,12 @@ interface CaliperDisplayProps {
   settings: CaliperSettings;
   vernierPosition: number; // This will now be a percentage (0-100)
   onPositionChange?: (position: CaliperPosition) => void;
-  pixelRatio: number;
 }
 
 const CaliperDisplay = ({
   settings,
   vernierPosition,
   onPositionChange,
-  pixelRatio,
 }: CaliperDisplayProps) => {
   const [imageStatus, setImageStatus] = useState({
     base: false,
