@@ -1,12 +1,15 @@
+// src/features/simulator/components/SimulatorPage.tsx
+
 import { useState } from "react";
 import { Ruler } from "lucide-react";
 import UnderConstruction from "../../../components/common/UnderConstruction/UnderConstruction";
 import CaliperDisplay from "./CaliperDisplay/CaliperDisplay";
 import VernierControl from "./VernierControl/VernierControl";
+import SettingsPanel from "./SettingsPanel/SettingsPanel";
 import { CaliperSettings, CaliperPosition } from "../types/simulator.types";
 
 const SimulatorPage = () => {
-  const [settings] = useState<CaliperSettings>({
+  const [settings, setSettings] = useState<CaliperSettings>({
     mainScaleLength: 100,
     mainScaleDivision: 1,
     vernierDivisions: 10,
@@ -14,12 +17,18 @@ const SimulatorPage = () => {
     zeroError: 0,
   });
 
-  // Define the pixel movement range for vernier scale
-  const VERNIER_MOVEMENT_RANGE = 672; // Adjust this value based on your image size
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const VERNIER_MOVEMENT_RANGE = 300;
   const [vernierPosition, setVernierPosition] = useState(0);
 
   const handlePositionChange = (position: CaliperPosition) => {
     console.log("Position changed:", position);
+  };
+
+  const handleSettingsChange = (newSettings: CaliperSettings) => {
+    setSettings(newSettings);
+    // Reset vernier position when settings change
+    setVernierPosition(0);
   };
 
   return (
@@ -41,6 +50,12 @@ const SimulatorPage = () => {
           maxValue={settings.mainScaleLength}
           movementRange={VERNIER_MOVEMENT_RANGE}
           onChange={setVernierPosition}
+        />
+        <SettingsPanel
+          settings={settings}
+          onSettingsChange={handleSettingsChange}
+          isOpen={isSettingsOpen}
+          onToggle={() => setIsSettingsOpen(!isSettingsOpen)}
         />
       </div>
     </div>
