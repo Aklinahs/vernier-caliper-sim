@@ -1,6 +1,5 @@
 // src/features/simulator/components/VernierControl/VernierControl.tsx
 
-import React from "react";
 import { CaliperSettings } from "../../types/simulator.types";
 
 interface VernierControlProps {
