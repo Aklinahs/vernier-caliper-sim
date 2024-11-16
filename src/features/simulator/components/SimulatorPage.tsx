@@ -43,11 +43,12 @@ const SimulatorPage = () => {
         <CaliperDisplay
           settings={settings}
           vernierPosition={vernierPosition}
+          movementRange={MOVEMENT_RANGE}
           onPositionChange={handlePositionChange}
         />
         <VernierControl
           value={vernierPosition}
-          maxValue={settings.mainScaleLength}
+          settings={settings}
           movementRange={MOVEMENT_RANGE}
           onChange={setVernierPosition}
         />

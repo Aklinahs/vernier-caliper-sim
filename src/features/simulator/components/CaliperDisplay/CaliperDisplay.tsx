@@ -5,13 +5,15 @@ import { CaliperSettings, CaliperPosition } from "../../types/simulator.types";
 
 interface CaliperDisplayProps {
   settings: CaliperSettings;
-  vernierPosition: number; // This will now be a percentage (0-100)
+  vernierPosition: number;
+  movementRange: number; // Add this line
   onPositionChange?: (position: CaliperPosition) => void;
 }
 
 const CaliperDisplay = ({
   settings,
   vernierPosition,
+  movementRange, // Add this line
   onPositionChange,
 }: CaliperDisplayProps) => {
   const [imageStatus, setImageStatus] = useState({
@@ -27,12 +29,27 @@ const CaliperDisplay = ({
   };
 
   useEffect(() => {
+    console.log("Debug Values:", {
+      vernierPosition,
+      movementRange,
+      mainScaleLength: settings.mainScaleLength,
+      calculation: (vernierPosition / movementRange) * settings.mainScaleLength,
+    });
+
     const position = {
       mainScale: 0,
-      vernierScale: (vernierPosition / 100) * settings.mainScaleLength, // Convert percentage to mm
+      vernierScale:
+        (vernierPosition / movementRange) * settings.mainScaleLength,
     };
     onPositionChange?.(position);
-  }, [vernierPosition, onPositionChange, settings.mainScaleLength]);
+  }, [
+    vernierPosition,
+    movementRange,
+    onPositionChange,
+    settings.mainScaleLength,
+  ]);
+
+  console.log("vernierPosition:", vernierPosition);
 
   return (
     <div className="relative w-full h-64 bg-white rounded-lg shadow-md overflow-hidden">
