@@ -17,11 +17,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onSettingsChange,
   isOpen,
   onToggle,
-  movementRange = 75, // Default to 75 if not provided
 }) => {
   // Calculate least count and step value using the same formula as VernierControl
   const leastCount = settings.mainScaleDivision / settings.vernierDivisions;
-  const stepValue = (leastCount / settings.mainScaleLength) * movementRange;
 
   // Calculate max zero error (±5mm)
   const maxZeroError = 5;

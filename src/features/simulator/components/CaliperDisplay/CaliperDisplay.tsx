@@ -30,7 +30,6 @@ const CaliperDisplay = ({
 
   // Calculate least count and step value
   const leastCount = settings.mainScaleDivision / settings.vernierDivisions;
-  const stepValue = (leastCount / settings.mainScaleLength) * movementRange;
 
   // Calculate zero error offset using the same scaling as vernier movement
   const zeroErrorOffset =
