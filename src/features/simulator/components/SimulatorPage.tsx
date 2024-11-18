@@ -57,6 +57,7 @@ const SimulatorPage = () => {
           onSettingsChange={handleSettingsChange}
           isOpen={isSettingsOpen}
           onToggle={() => setIsSettingsOpen(!isSettingsOpen)}
+          movementRange={MOVEMENT_RANGE} // Add this line
         />
       </div>
     </div>

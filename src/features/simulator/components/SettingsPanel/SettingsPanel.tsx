@@ -9,6 +9,7 @@ interface SettingsPanelProps {
   onSettingsChange: (settings: CaliperSettings) => void;
   isOpen: boolean;
   onToggle: () => void;
+  movementRange?: number; // Add this prop
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -16,7 +17,34 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onSettingsChange,
   isOpen,
   onToggle,
+  movementRange = 75, // Default to 75 if not provided
 }) => {
+  // Calculate least count and step value using the same formula as VernierControl
+  const leastCount = settings.mainScaleDivision / settings.vernierDivisions;
+  const stepValue = (leastCount / settings.mainScaleLength) * movementRange;
+
+  // Calculate max zero error (±5mm)
+  const maxZeroError = 5;
+
+  // Handle zero error change using stepValue
+  const handleZeroErrorChange = (direction: "increase" | "decrease") => {
+    const currentError = settings.zeroError;
+
+    // Calculate new value using the same step value as vernier movement
+    let newError;
+    if (direction === "increase") {
+      newError = Math.min(currentError + leastCount, maxZeroError);
+    } else {
+      newError = Math.max(currentError - leastCount, -maxZeroError);
+    }
+
+    // Update settings with the new zero error
+    onSettingsChange({
+      ...settings,
+      zeroError: Number(newError.toFixed(3)),
+    });
+  };
+
   const handleMainScaleLengthChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -85,6 +113,33 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
               <option value={40}>40 divisions</option>
               <option value={50}>50 divisions</option>
             </select>
+          </div>
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Zero Error ({settings.units})
+            </label>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => handleZeroErrorChange("decrease")}
+                className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-800"
+                title="Decrease zero error"
+              >
+                -
+              </button>
+              <div className="flex-1 text-center">
+                {settings.zeroError.toFixed(3)}
+              </div>
+              <button
+                onClick={() => handleZeroErrorChange("increase")}
+                className="p-2 rounded bg-blue-100 hover:bg-blue-200 text-blue-800"
+                title="Increase zero error"
+              >
+                +
+              </button>
+            </div>
+            <div className="text-xs text-gray-500 text-center">
+              Step: {leastCount} {settings.units}
+            </div>
           </div>
         </div>
       </div>
