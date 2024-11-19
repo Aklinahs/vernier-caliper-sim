@@ -47,22 +47,18 @@ const CaliperDisplay = ({
   }, []);
 
   // Calculate and update position
-  useEffect(() => {
-    if (onPositionChange) {
-      onPositionChange({
-        mainScale: (zeroErrorOffset / movementRange) * settings.mainScaleLength,
-        vernierScale:
-          (vernierPosition / movementRange) * settings.mainScaleLength,
-      });
-    }
-  }, [
-    zeroErrorOffset,
-    vernierPosition,
-    movementRange,
-    settings.mainScaleLength,
-    onPositionChange,
-  ]);
+  const currentPosition = useMemo(
+    () => ({
+      mainScale: (zeroErrorOffset / movementRange) * settings.mainScaleLength,
+      vernierScale:
+        (vernierPosition / movementRange) * settings.mainScaleLength,
+    }),
+    [zeroErrorOffset, vernierPosition, movementRange, settings.mainScaleLength]
+  );
 
+  useEffect(() => {
+    onPositionChange?.(currentPosition);
+  }, [currentPosition, onPositionChange]);
   return (
     <div className="flex flex-col gap-4">
       {/* Control Panel */}
