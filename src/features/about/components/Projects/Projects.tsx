@@ -1,7 +1,7 @@
 // src/features/about/components/Projects/Projects.tsx
 
 import { Project } from "../../types/about.types";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 const Projects = () => {
   const projects: Project[] = []; // Empty array for future projects

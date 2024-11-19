@@ -1,6 +1,5 @@
 // src/features/about/components/YouTubeSection/YouTubeSection.tsx
 
-import React from "react";
 import { Profile } from "../../types/about.types";
 import { Youtube, ExternalLink } from "lucide-react";
 import youtubeIcon from "../../assets/youtube-logo.png";
