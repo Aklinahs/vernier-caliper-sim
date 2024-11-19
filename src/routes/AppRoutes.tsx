@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import MainLayout from "../components/layouts/MainLayout";
 import SimulatorPage from "../features/simulator/components/SimulatorPage";
 import PracticePage from "../features/practice/components/PracticePage/PracticePage";
-import AboutPage from "../features/about/components/AboutPage";
+import AboutPage from "../features/about/components/AboutPage/AboutPage";
 
 export const AppRoutes = () => {
   return (
