@@ -18,3 +18,20 @@ export interface VernierConfig {
   movementRange: number;
   pixelRatio: number;
 }
+
+// Add these new types to your existing types file
+export interface CalculationSteps {
+  mainScaleReading: number;
+  vernierCoincidence: number;
+  leastCount: number;
+  zeroError: number;
+  finalMeasurement: number;
+}
+
+export interface CalculationsDisplayProps {
+  position: CaliperPosition;
+  settings: CaliperSettings;
+  isDetailedView: boolean;              // Required prop
+  onViewToggle: () => void;            // Add this to handle toggle from parent
+  className?: string;
+}
