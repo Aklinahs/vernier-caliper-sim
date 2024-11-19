@@ -1,7 +1,7 @@
 // src/features/practice/hooks/usePracticeTest.ts
 
 import { useState, useCallback } from 'react';
-import { TestConfig, TestState, PracticeQuestion } from '../types/practice.types';
+import { TestConfig, TestState } from '../types/practice.types';
 import { generateQuestion } from '../services/testGenerator';
 
 const initialTestState: TestState = {
