@@ -21,7 +21,7 @@ const CaliperDisplay = ({
     vernierScale: false,
   });
   const [zoom, setZoom] = useState(1);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isDragging] = useState(false);
 
   // Calculate zero error offset
   const zeroErrorOffset = useMemo(() => {

@@ -1,7 +1,7 @@
 // src/features/simulator/components/CalculationsDisplay/CalculationsDisplay.tsx
 
 import React from "react";
-import { Eye, EyeOff, Info, Calculator } from "lucide-react";
+import { Info, Calculator } from "lucide-react";
 import { CalculationsDisplayProps } from "../../types/simulator.types";
 
 interface StepBoxProps {
@@ -34,7 +34,6 @@ const CalculationsDisplay: React.FC<CalculationsDisplayProps> = ({
   position,
   settings,
   isDetailedView,
-  onViewToggle,
   className = "",
 }) => {
   const leastCount = settings.mainScaleDivision / settings.vernierDivisions;
